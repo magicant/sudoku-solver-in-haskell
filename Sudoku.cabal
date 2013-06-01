@@ -8,4 +8,4 @@ Cabal-Version:     >= 1.2
 
 Executable sudoku
   Main-is:         Sudoku.hs
-  Build-Depends:   base
+  Build-Depends:   base, array
