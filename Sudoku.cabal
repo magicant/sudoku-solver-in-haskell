@@ -1,0 +1,11 @@
+Name:              sudoku-solver
+Version:           0.0
+Description:       Simple sudoku solver
+Author:            magicant
+Homepage:          https://github.com/magicant/sudoku-solver-in-haskell/
+Build-Type:        Simple
+Cabal-Version:     >= 1.2
+
+Executable sudoku
+  Main-is:         Sudoku.hs
+  Build-Depends:   base
