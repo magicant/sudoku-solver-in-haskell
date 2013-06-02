@@ -1,1 +1,7 @@
 This is a simple sudoku solver written in Haskell.
+
+Usage:
+
+runhaskell Setup configure
+runhaskell Setup build
+dist/build/sudoku/sudoku
