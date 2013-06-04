@@ -1,5 +1,6 @@
 module Board where
 
+import Control.Monad
 import Data.Array
 import Data.List
 
@@ -31,6 +32,13 @@ blockBounds (r, c) = ((rl, cl), (ru, cu))
     (rl, ru) = boundsContaining r
     (cl, cu) = boundsContaining c
     boundsContaining n = head $ filter (flip inRange n) blockNumBounds
+
+allBlockBounds :: [(Index, Index)]
+allBlockBounds =
+  do
+    (rl, ru) <- blockNumBounds
+    (cl, cu) <- blockNumBounds
+    return ((rl, cl), (ru, cu))
 
 indexBounds :: (Index, Index)
 indexBounds = ((l, l), (u, u))
@@ -86,6 +94,29 @@ eliminateImpossibilities :: Board [Int] -> Board [Int]
 eliminateImpossibilities b =
   boardOfList [(b ! i) \\ impossibilities b i | i <- range indexBounds]
 
+-- | @possibilities b is@ is a mapping from possible numbers to indexes where
+-- the numbers may occur in indexes @is@ on board @b@.
+possibilities :: Board [Int] -> [Index] -> Array Int [Index]
+possibilities b is = accumArray (flip (:)) [] numBounds assocs
+  where assocs = do { i <- is; zip (b ! i) (repeat i) }
+
+-- | Find numbers that can occur at exactly one index within the specified
+-- indexes.
+uniquePossibilities :: Board [Int] -> [Index] -> [(Int, Index)]
+uniquePossibilities b is =
+  do
+    (n, is') <- assocs $ possibilities b is
+    guard $ length is' == 1
+    return (n, head is')
+
+-- | Fix numbers that can occur at exactly one index within a block
+filterUnique :: Board [Int] -> Board [Int]
+filterUnique board = board // uniques
+  where
+    uniques = concatMap uniques' allBlockBounds
+    uniques' blockBound = map f $ uniquePossibilities board $ range blockBound
+    f (n, i) = (i, [n])
+
 fixedPoint :: Eq a => (a -> a) -> a -> a
 fixedPoint f a = fst $ head $ dropWhile (uncurry (/=)) $ zip as $ tail as
   where as = iterate f a
@@ -100,7 +131,7 @@ simulate b = simulate' (range indexBounds)
       [] -> []
       [n] -> simulate' is
       ns -> concatMap (\n -> simulate (b' // [(i, [n])])) ns
-    b' = fixedPoint eliminateImpossibilities b
+    b' = fixedPoint (filterUnique . eliminateImpossibilities) b
 
 -- | All possible soltions.
 solve :: Board Int -> [Board Int]
