@@ -2,6 +2,7 @@ module Board where
 
 import Control.Monad
 import Data.Array
+import Data.Function
 import Data.List
 
 
@@ -123,14 +124,14 @@ fixedPoint f a = fst $ head $ dropWhile (uncurry (/=)) $ zip as $ tail as
 
 -- | Repeat simulation to find all possible solutions.
 simulate :: Board [Int] -> [Board [Int]]
-simulate b = simulate' (range indexBounds)
+simulate b =
+  case sortedUnfixedCells of
+    []          -> [b'] -- All cells fixed; this is the solution
+    ((_, []):_) -> []   -- No number is possible for this cell; unsolvable
+    ((i, ns):_) -> concatMap (\n -> simulate (b' // [(i, [n])])) ns
   where
-    simulate' [] = [b']
-    simulate' (i:is) =
-      case b' ! i of
-      [] -> []
-      [n] -> simulate' is
-      ns -> concatMap (\n -> simulate (b' // [(i, [n])])) ns
+    sortedUnfixedCells = sortBy (compare `on` (length . snd)) unfixedCells
+    unfixedCells = filter (\(_, ps) -> length ps /= 1) $ assocs b'
     b' = fixedPoint (filterUnique . eliminateImpossibilities) b
 
 -- | All possible soltions.
