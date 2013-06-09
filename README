@@ -5,3 +5,16 @@ Usage:
 runhaskell Setup configure
 runhaskell Setup build
 dist/build/sudoku/sudoku
+
+Send a board through the standard input and the solution will be spat to the standard output.
+The input board should be a simple 9x9 matrix such as:
+
+100400709
+050780020
+709023006
+300600000
+640070012
+908002045
+230504800
+060090030
+807001064
