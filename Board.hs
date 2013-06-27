@@ -119,8 +119,9 @@ filterUnique board = board // uniques
     f (n, i) = (i, [n])
 
 fixedPoint :: Eq a => (a -> a) -> a -> a
-fixedPoint f a = fst $ head $ dropWhile (uncurry (/=)) $ zip as $ tail as
-  where as = iterate f a
+fixedPoint f a =
+  let next = f a in
+  if next == a then a else fixedPoint f next
 
 -- | Repeat simulation to find all possible solutions.
 simulate :: Board [Int] -> [Board [Int]]
