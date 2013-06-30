@@ -23,8 +23,14 @@ blockNumBounds = [(1, 3), (4, 6), (7, 9)]
 rowBounds :: Int -> (Index, Index)
 rowBounds r = ((r, fst numBounds), (r, snd numBounds))
 
+allRowBounds :: [(Index, Index)]
+allRowBounds = map rowBounds (range numBounds)
+
 colBounds :: Int -> (Index, Index)
 colBounds c = ((fst numBounds, c), (snd numBounds, c))
+
+allColBounds :: [(Index, Index)]
+allColBounds = map colBounds (range numBounds)
 
 -- | Bounds of the block containing the argument index.
 blockBounds :: Index -> (Index, Index)
@@ -110,13 +116,14 @@ uniquePossibilities b is =
     guard $ length is' == 1
     return (n, head is')
 
--- | Fix numbers that can occur at exactly one index within a block
+-- | Fix numbers that can occur at exactly one index within a line or block
 filterUnique :: Board [Int] -> Board [Int]
 filterUnique board = board // uniques
   where
-    uniques = concatMap uniques' allBlockBounds
-    uniques' blockBound = map f $ uniquePossibilities board $ range blockBound
+    uniques = concatMap uniques' bounds
+    uniques' bound = map f $ uniquePossibilities board $ range bound
     f (n, i) = (i, [n])
+    bounds = allRowBounds ++ allColBounds ++ allBlockBounds
 
 fixedPoint :: Eq a => (a -> a) -> a -> a
 fixedPoint f a =
