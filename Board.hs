@@ -6,13 +6,8 @@ import Data.Function
 import Data.List
 
 
-type Index = (Int, Int)
-
-row :: Index -> Int
-row = fst
-
-col :: Index -> Int
-col = snd
+data Index = Index { row :: Int, col :: Int }
+  deriving (Eq, Ord, Ix)
 
 numBounds :: (Int, Int)
 numBounds = (1, 9)
@@ -21,20 +16,20 @@ blockNumBounds :: [(Int, Int)]
 blockNumBounds = [(1, 3), (4, 6), (7, 9)]
 
 rowBounds :: Int -> (Index, Index)
-rowBounds r = ((r, fst numBounds), (r, snd numBounds))
+rowBounds r = (Index r (fst numBounds), Index r (snd numBounds))
 
 allRowBounds :: [(Index, Index)]
 allRowBounds = map rowBounds (range numBounds)
 
 colBounds :: Int -> (Index, Index)
-colBounds c = ((fst numBounds, c), (snd numBounds, c))
+colBounds c = (Index (fst numBounds) c, Index (snd numBounds) c)
 
 allColBounds :: [(Index, Index)]
 allColBounds = map colBounds (range numBounds)
 
 -- | Bounds of the block containing the argument index.
 blockBounds :: Index -> (Index, Index)
-blockBounds (r, c) = ((rl, cl), (ru, cu))
+blockBounds (Index r c) = (Index rl cl, Index ru cu)
   where
     (rl, ru) = boundsContaining r
     (cl, cu) = boundsContaining c
@@ -45,11 +40,11 @@ allBlockBounds =
   do
     (rl, ru) <- blockNumBounds
     (cl, cu) <- blockNumBounds
-    return ((rl, cl), (ru, cu))
+    return (Index rl cl, Index ru cu)
 
 indexBounds :: (Index, Index)
-indexBounds = ((l, l), (u, u))
-  where l = fst numBounds; u = snd numBounds
+indexBounds = (Index l l, Index u u)
+  where (l, u) = numBounds
 
 
 type Board a = Array Index a
@@ -170,6 +165,6 @@ sampleBoard = listArray indexBounds [
 -}
 
 unsolvableBoard :: Board Int
-unsolvableBoard = board 0 // [((1,1),1), ((1,2),1)]
+unsolvableBoard = board 0 // [(Index 1 1, 1), (Index 1 2, 1)]
 
 -- vim: et sw=2 sts=2
