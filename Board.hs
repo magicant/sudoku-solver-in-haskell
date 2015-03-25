@@ -7,7 +7,7 @@ import Data.List
 
 
 data Index = Index { row :: Int, col :: Int }
-  deriving (Eq, Ord, Ix)
+  deriving (Eq, Ord, Ix, Show)
 
 numBounds :: (Int, Int)
 numBounds = (1, 9)
@@ -141,6 +141,21 @@ simulate b =
 solve :: Board Int -> [Board Int]
 solve = map unboxPossibilityBoard . simulate . possibilityBoard
 
+-- | A sample board that is easy to solve.
+--
+-- >>> :{
+-- >>> solve sampleBoard == [listArray indexBounds [
+-- >>> 1, 2, 3, 4, 5, 6, 7, 8, 9,
+-- >>> 4, 5, 6, 7, 8, 9, 1, 2, 3,
+-- >>> 7, 8, 9, 1, 2, 3, 4, 5, 6,
+-- >>> 3, 1, 2, 6, 4, 5, 9, 7, 8,
+-- >>> 6, 4, 5, 9, 7, 8, 3, 1, 2,
+-- >>> 9, 7, 8, 3, 1, 2, 6, 4, 5,
+-- >>> 2, 3, 1, 5, 6, 4, 8, 9, 7,
+-- >>> 5, 6, 4, 8, 9, 7, 2, 3, 1,
+-- >>> 8, 9, 7, 2, 3, 1, 5, 6, 4]]
+-- >>> :}
+-- True
 sampleBoard :: Board Int
 sampleBoard = listArray indexBounds [
   1, 0, 0, 4, 0, 0, 7, 0, 9,
@@ -152,18 +167,11 @@ sampleBoard = listArray indexBounds [
   2, 3, 0, 5, 0, 4, 8, 0, 0,
   0, 6, 0, 0, 9, 0, 0, 3, 0,
   8, 0, 7, 0, 0, 1, 0, 6, 4]
-{-
-  1, 2, 3, 4, 5, 6, 7, 8, 9,
-  4, 5, 6, 7, 8, 9, 1, 2, 3,
-  7, 8, 9, 1, 2, 3, 4, 5, 6,
-  3, 1, 2, 6, 4, 5, 9, 7, 8,
-  6, 4, 5, 9, 7, 8, 3, 1, 2,
-  9, 7, 8, 3, 1, 2, 6, 4, 5,
-  2, 3, 1, 5, 6, 4, 8, 9, 7,
-  5, 6, 4, 8, 9, 7, 2, 3, 1,
-  8, 9, 7, 2, 3, 1, 5, 6, 4]
--}
 
+-- | A board that has no solution.
+--
+-- >>> solve unsolvableBoard
+-- []
 unsolvableBoard :: Board Int
 unsolvableBoard = board 0 // [(Index 1 1, 1), (Index 1 2, 1)]
 
