@@ -1,11 +1,19 @@
-Name:              sudoku-solver
-Version:           0.0
-Description:       Simple sudoku solver
-Author:            magicant
-Homepage:          https://github.com/magicant/sudoku-solver-in-haskell/
-Build-Type:        Simple
-Cabal-Version:     >= 1.2
+Name:               sudoku-solver
+Version:            0.0
+Description:        Simple sudoku solver
+Author:             magicant
+Homepage:           https://github.com/magicant/sudoku-solver-in-haskell/
+Build-Type:         Simple
+Cabal-Version:      >= 1.10
 
 Executable sudoku
-  Main-is:         Sudoku.hs
-  Build-Depends:   base, array
+  Default-Language: Haskell2010
+  Main-is:          Sudoku.hs
+  Build-Depends:    base, array
+
+Test-Suite doctest
+  Type:             exitcode-stdio-1.0
+  Default-Language: Haskell2010
+  HS-Source-Dirs:   test
+  Main-Is:          doctests.hs
+  Build-Depends:    base, doctest
